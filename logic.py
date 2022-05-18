@@ -11,15 +11,15 @@ class Combat:
     @property
     def hit_chance(self):
         a, t = [self.attacker, self.target]
-        a_spd = a.base_stats['speed']
-        a_acc = a.base_stats['accuracy']
-        t_spd = t.base_stats['speed']
-        t_acc = t.base_stats['accuracy']
+        a_spd = a.stats['speed']
+        a_acc = a.stats['accuracy']
+        t_spd = t.stats['speed']
+        t_acc = t.stats['accuracy']
         
         return 0.5 * (a_acc * 0.025) + (a_spd * 0.005) - (t_acc * 0.025) + (t_spd * 0.005)
     @property
     def initiative(self):
-        return 0.5 * (self.attacker.base_stats['speed'] * 0.25) - (self.target.base_stats['speed'] * 0.25)
+        return 0.5 * (self.attacker.stats['speed'] * 0.25) - (self.target.stats['speed'] * 0.25)
     
     def swap(self):
         _t = self.attacker
@@ -28,16 +28,16 @@ class Combat:
         
     def attack(self):
         if random() >= self.hit_chance:
-            a_dmg = self.attacker.base_stats['power']
-            b_def = self.target.base_stats['defence']
+            a_dmg = self.attacker.stats['power']
+            b_def = self.target.stats['defence']
             finaldmg = a_dmg * 0.2 - b_def
             
             if finaldmg < 0:
                 finaldmg = 0
             
-            self.target.base_stats['health'] -= finaldmg
-            if self.target.base_stats['health'] < 0:
-                self.target.base_stats['health'] = 0
+            self.target.stats['health'] -= finaldmg
+            if self.target.stats['health'] < 0:
+                self.target.stats['health'] = 0
             msg = '%s takes %d' % (self.target.name, finaldmg)
         else:
             msg = '%s misses' % self.attacker.name
@@ -45,11 +45,11 @@ class Combat:
         print(msg)
         print('[%s: %d/%d][%s: %d/%d]' % (
             self.attacker.name,
-            self.attacker.base_stats['health'],
-            self.attacker.max_stats['health'],
+            self.attacker.stats['health'],
+            self.attacker.stats['health'],
             self.target.name,
-            self.target.base_stats['health'],
-            self.target.max_stats['health'],
+            self.target.stats['health'],
+            self.target.stats['health'],
             ))
         
     def make_turn(self):

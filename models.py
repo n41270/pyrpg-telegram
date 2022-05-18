@@ -3,11 +3,7 @@ import random
 
 from logic import Combat
 
-rep_tables = [
-    0, 50, 100, 200,
-    300, 400, 500,
-    600, 850
-]
+rep_tables = [round((4 * (i**3)) / 5) for i in range(1, 100)]
 
 base_stats_table = {
     'health': 0,
@@ -20,22 +16,22 @@ base_stats_table = {
 
 class Creature:
     skill_names = list()
-    base_stats = base_stats_table
+    stats = base_stats_table
     name = 'default creature'
     reputation = 0
     money = 0
     level = 0 #TODO
     
     def make_stats(self):
-        hp, pwr, deff, acc, spd = self.base_stats.values()
+        hp, pwr, deff, acc, spd = self.stats.values()
         
         hp = int(hp + self.level * 30)
         pwr = int(pwr + self.level * 5)
-        deff = int(deff + self.level * 0.5)
-        acc = float(acc + self.level * 0.005)
-        spd = float(spd + self.level * 0.05)
+        deff = roll_dice(3, 2, self.level)
+        acc = roll_dice(3, 2, self.level)
+        spd = roll_dice(1, 2) + math.log(self.level, 10)
         
-        self.base_stats = {
+        self.stats = {
             'health': hp,
             'power': pwr,
             'defence': deff,
@@ -43,10 +39,10 @@ class Creature:
             'speed': spd
         }
         
-        self.max_stats = self.base_stats.copy()
+        self.max_stats = dict(self.stats)
     
     def isalive(self):
-        return (self.base_stats['health'] > 0) if 'health' in self.base_stats else False
+        return (self.stats['health'] > 0) if 'health' in self.stats else False
 
     def levelup(self):
         pass
@@ -81,3 +77,10 @@ def combat(a: Creature, b: Creature):
         c.swap()
     
     c.make_turn()
+
+def roll_dice(rolls, faces, modifier=0):
+    value = 0
+    for i in range(rolls):
+        value += random.randrange(faces)
+
+    return value + modifier
