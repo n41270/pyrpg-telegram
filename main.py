@@ -1,7 +1,10 @@
+from dotenv import dotenv_values
 from telegram.ext.updater import Updater
 from models import Player, Monster, combat
 
-BOT_TOKEN = '1358072063:AAH8mkVR-ORnq9P-aDq_sMLdzgTjkHHD9mk'
+
+config = dotenv_values()
+BOT_TOKEN = config['BOT_TOKEN']
 
 if __name__ == '__main__':
     # updater = Updater(BOT_TOKEN, use_context=True)
