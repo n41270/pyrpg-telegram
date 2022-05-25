@@ -1,6 +1,6 @@
 from dotenv import dotenv_values
 from telegram.ext.updater import Updater
-from models import Player, Monster, combat
+from models import Player, Monster, Stats
 
 
 config = dotenv_values()
@@ -9,11 +9,10 @@ BOT_TOKEN = config['BOT_TOKEN']
 if __name__ == '__main__':
     # updater = Updater(BOT_TOKEN, use_context=True)
     # dp = Updater.dispatcher
-    pl = Player()
-    pl.reputation_gain(600)
-    en = Monster('Evil Witch', 25)
     
-    combat(pl, en)
+    p1 = Player()
+    p1.reputation_gain(21200)
+    print(p1.stats.base)
     
     #print(pl.base_stats)
     #print(en.base_stats)

@@ -1,11 +1,12 @@
 import math
 import random
 
+from enum import Enum
 from logic import Combat
 
 rep_tables = [round((4 * (i**3)) / 5) for i in range(1, 100)]
 
-base_stats_table = {
+base_attr_table = {
     'health': 0,
     'power': 0,
     'defence': 0,
@@ -13,7 +14,27 @@ base_stats_table = {
     'speed': 0 # 1st attack chance
 }
 
+base_stats_table = {
+    'str': 10,
+    'int': 10,
+    'vit': 10,
+    'agi': 10,
+    'luck': 5
+}
+
+
+def roll_dice(rolls, faces, modifier=0):
+    value = 0
+    for i in range(rolls):
+        value += 1 + random.randrange(faces)
+
+    return value + modifier
+
 class Stats:
+    FAST = roll_dice(8, 12)
+    NORMAL = roll_dice(5, 12)
+    SLOW = roll_dice(2, 12)
+        
     def __init__(self, mStats):
         self.base = dict()
         self.set_base(mStats)
@@ -51,35 +72,25 @@ class Stats:
 
 
 class Creature:
-    skill_names = list()
+    attrs = Stats(base_attr_table)
     stats = Stats(base_stats_table)
-    name = 'default creature'
-    level = 0
     
-    def make_stats(self):
-        growth_fast = roll_dice(5, 3)
-        growth_slow = roll_dice(1, 2)
-        growth_lvl = math.log(growth_fast, 6) * self.level ** 2
-        growth_lvl = round(growth_lvl)
+    def __init__(self):
+        self.name = 'default creature'
+    
+    def get_stats(self):
+        bStats = self.stats.base
+        growth_chance = self.level
+        
+        for i in range(growth_chance):
+            kbstats = bStats.keys()
+            stat = random.choice(list(kbstats))
+            currval = self.stats.get_base(stat)
+            currval += 1
+            self.stats.set_base({
+                stat: currval
+            })
 
-        hp, pwr, deff, acc, spd = self.stats.base.values()
-        
-        hp = int(hp + self.level * 30)
-        pwr = int(pwr + self.level * 5)
-        deff = roll_dice(3, 2, self.level) + growth_fast
-        acc = roll_dice(3, 2, self.level) + growth_slow
-        spd = roll_dice(1, 2) + math.log(self.level, 10)
-        
-        stats = {
-            'health': hp,
-            'power': pwr,
-            'defence': deff,
-            'accuracy': acc,
-            'speed': spd
-        }
-        
-        self.stats.set_base(stats)
-    
     def isalive(self):
         return (self.stats['health'] > 0) if 'health' in self.stats else False
 
@@ -102,7 +113,7 @@ class Player(Creature):
             self.levelup()
             
     def levelup(self):
-        self.make_stats()
+        self.get_stats()
         print('You are now level %d' % self.level)
 
 
@@ -121,10 +132,3 @@ def combat(a: Creature, b: Creature):
         c.swap()
     
     c.make_turn()
-
-def roll_dice(rolls, faces, modifier=0):
-    value = 0
-    for i in range(rolls):
-        value += random.randrange(faces)
-
-    return value + modifier
